@@ -27,12 +27,22 @@ public class GenerateTilemapWorld : MonoBehaviour {
     float[,] noiseMap2;
     float[,] noiseMapSum;
     int AOEOP20_EatHROLA2 = 0;
-    void Start() {
+    Tilemap tilemap; 
 
+    private Vector3 GetMousePosition() {
+        return Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+    }
+    void Start() {
+        tilemap=this.gameObject.GetComponent<Tilemap>();
     }
 
     // Update is called once per frame
     void Update() {
+        if(Input.GetMouseButton(0)) {
+            tilemap.SetTile(new Vector3Int( 
+                Mathf.FloorToInt(GetMousePosition().x),
+                Mathf.FloorToInt(GetMousePosition().y), 0), null);
+        }
         if (Input.GetKeyDown(KeyCode.M))
         {
             AOEOP20_EatHROLA2 = 0;
@@ -67,28 +77,5 @@ public class GenerateTilemapWorld : MonoBehaviour {
         job.blockList = tiles;
         job.chunkWidth = chunkWidth;
         job.Execute();
-    }
-    IEnumerator OptimizedWorldGeneration() {
-        int currentLastX = lastX;
-        lastX = lastX + 16;
-        for (int j = 0; j<chunkWidth; j++) {
-            int h = Mathf.FloorToInt(noiseMap[0,currentLastX+j] * 100);
-            this.gameObject.GetComponent<Tilemap>().SetTile(new Vector3Int(AOEOP20_EatHROLA2++, j, 0), dirt);
-            for (int i = 0; i<h; i++) {
-                int randomDirtHeight = Random.Range(15, 19);
-                if(i == h-1) {
-                    this.gameObject.GetComponent<Tilemap>().SetTile(new Vector3Int(j+currentLastX, i, 0), grass);
-                }
-                else if(i < h && i >h-randomDirtHeight) {
-                    this.gameObject.GetComponent<Tilemap>().SetTile(new Vector3Int(j+currentLastX, i, 0), dirt);
-                }
-                else {
-                    this.gameObject.GetComponent<Tilemap>().SetTile(new Vector3Int(j+currentLastX, i, 0), stone);
-                }
-
-                
-            }
-            yield return new WaitForSeconds(0.001f);
-        }
     }
 }

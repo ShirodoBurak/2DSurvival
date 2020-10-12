@@ -11,10 +11,13 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/ReadyForBuild.unity
     guid: 98d481b243a990c43870f9339c81de98
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/TileMap.unity
+    guid: 35f881df22fc5484bbe470dfcb1cccda
   m_configObjects: {}

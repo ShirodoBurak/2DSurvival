@@ -2,50 +2,85 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
+
 public class CharacterController2D : MonoBehaviour {
-    
-    public float speed = 10.0f;
-    public float jumpForce = 20.0f;
-    public float airDrag = 0.8f;
+    // Move player in 2D space
+    public float maxSpeed = 3.4f;
+    public float jumpHeight = 6.5f;
+    public float gravityScale = 1.5f;
+    public Camera mainCamera;
 
-    public Rigidbody2D body;
-    private SpriteRenderer spriteRenderer;
+    bool facingRight = true;
+    float moveDirection = 0;
+    bool isGrounded = false;
+    Vector3 cameraPos;
+    Rigidbody2D r2d;
+    Collider2D mainCollider;
+    // Check every collider except Player and Ignore Raycast
+    LayerMask layerMask = ~(1<<2|1<<8);
+    Transform t;
 
-    public Vector2 currentVelocity;
-    private float previousPositionY;
-
-    // Start is called before the first frame update
+    // Use this for initialization
     void Start() {
-        body=GetComponent<Rigidbody2D>();
-        spriteRenderer=GetComponent<SpriteRenderer>();
+        t=transform;
+        r2d=GetComponent<Rigidbody2D>();
+        mainCollider=GetComponent<Collider2D>();
+        r2d.freezeRotation=true;
+        r2d.collisionDetectionMode=CollisionDetectionMode2D.Continuous;
+        r2d.gravityScale=gravityScale;
+        facingRight=t.localScale.x>0;
+        gameObject.layer=0;
+
+        if(mainCamera)
+            cameraPos=mainCamera.transform.position;
     }
 
-    private void FixedUpdate() {
-        Move();
-        previousPositionY=transform.position.y;
+    // Update is called once per frame
+    void Update() {
+        // Movement controls
+        if((Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.D))&&(isGrounded||r2d.velocity.x>0.01f)) {
+            moveDirection=Input.GetKey(KeyCode.A) ? -1 : 1;
+        }
+        else {
+            if(isGrounded||r2d.velocity.magnitude<0.01f) {
+                moveDirection=0;
+            }
+        }
+
+        // Change facing direction
+        if(moveDirection!=0) {
+            if(moveDirection>0&&!facingRight) {
+                facingRight=true;
+                t.localScale=new Vector3(Mathf.Abs(t.localScale.x), t.localScale.y, transform.localScale.z);
+            }
+            if(moveDirection<0&&facingRight) {
+                facingRight=false;
+                t.localScale=new Vector3(-Mathf.Abs(t.localScale.x), t.localScale.y, t.localScale.z);
+            }
+        }
+
+        // Jumping
+        if(Input.GetKeyDown(KeyCode.W)&&isGrounded) {
+            r2d.velocity=new Vector2(r2d.velocity.x, jumpHeight);
+        }
+
+        // Camera follow
+        if(mainCamera)
+            mainCamera.transform.position=new Vector3(t.position.x, cameraPos.y, cameraPos.z);
     }
 
-    private void Move() {
-        float velocity = Input.GetAxis("Horizontal")*speed;
-        bool isJumping = Input.GetKey(KeyCode.Space);
+    void FixedUpdate() {
+        Bounds colliderBounds = mainCollider.bounds;
+        Vector3 groundCheckPos = colliderBounds.min+new Vector3(colliderBounds.size.x*0.5f, 0.1f, 0);
+        // Check if player is grounded
+        isGrounded=Physics2D.OverlapCircle(groundCheckPos, 0.23f, layerMask);
 
-        velocity*=airDrag;
+        // Apply movement velocity
+        r2d.velocity=new Vector2((moveDirection)*maxSpeed, r2d.velocity.y);
 
-        // Horizontal Movement
-        body.velocity=Vector2.SmoothDamp(body.velocity, new Vector2(velocity, body.velocity.y), ref currentVelocity, 0.02f);
-
-        // Initiate Jump
-        if(isJumping) {
-            body.AddForce(new Vector2(0, jumpForce));
-        }
-
-        // Cancel Jump
-        if(!isJumping&&body.velocity.y>0.01f) {
-            body.velocity=new Vector2(body.velocity.x, body.velocity.y*0.95f);
-        }
-
-        if(velocity<0) spriteRenderer.flipX=true;
-        else if(velocity>0)
-            spriteRenderer.flipX=false;
+        // Simple debug
+        Debug.DrawLine(groundCheckPos, groundCheckPos-new Vector3(0, 0.23f, 0), isGrounded ? Color.green : Color.red);
     }
 }
