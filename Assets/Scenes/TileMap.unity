@@ -860,7 +860,7 @@ GameObject:
   - component: {fileID: 1172568346}
   - component: {fileID: 1172568345}
   m_Layer: 0
-  m_Name: outline
+  m_Name: PlaceBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -920,15 +920,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 999
-  m_Sprite: {fileID: 21300000, guid: 2c0a441890715b54ea2830f5cc125f54, type: 3}
-  m_Color: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.6117647}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1172568347
@@ -1179,7 +1179,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 4a9ba48a8a56aed43a0fb5a6826f9c00, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1433,13 +1433,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c0878bce0ff9f5429caa394748ab743, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grass: {fileID: 11400000, guid: a39631f67d6e62143ae5ff2a616b4031, type: 2}
-  dirt: {fileID: 11400000, guid: 5ada63988739962478e1cbdeb5878f93, type: 2}
-  stone: {fileID: 11400000, guid: 98ae9ee7c4b17454db81a03272ac096c, type: 2}
+  TileList:
+  - {fileID: 11400000, guid: 5ada63988739962478e1cbdeb5878f93, type: 2}
+  - {fileID: 11400000, guid: a39631f67d6e62143ae5ff2a616b4031, type: 2}
+  - {fileID: 11400000, guid: 41108c13714ad6947b194d16d8bf3dc7, type: 2}
+  - {fileID: 11400000, guid: 32e7d40f35044c64f8a0ad558cf6d2ce, type: 2}
+  - {fileID: 11400000, guid: 01004e7690adb884c975656ff235e522, type: 2}
+  - {fileID: 11400000, guid: f1d33bdda251e0a4b98e4067d50a2c77, type: 2}
   chunkWidth: 16
   mapSizeX: 1
-  mapSizeY: 25
-  additionalHeight: 25
+  mapSizeY: 25000
+  additionalHeight: 16
   X: 1
   Y: 1
   Seed: 8949
@@ -1450,7 +1454,8 @@ MonoBehaviour:
   additionalLacunarity: 3
   smoothness: 25
   cursor: {fileID: 1172568345}
-  ItemBox: {fileID: 1432345675}
+  PlaceSilhouette: {fileID: 1172568344}
+  HotbarIndex: 0
 --- !u!483693784 &1473556689
 TilemapRenderer:
   m_ObjectHideFlags: 0
@@ -1569,7 +1574,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: e3029d7c8f154334099fde3fc63a6519, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1838,7 +1843,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: ab7d7503ad4111e42b9906b07226d553, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

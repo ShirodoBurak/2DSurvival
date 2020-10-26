@@ -8,13 +8,11 @@ using System.ComponentModel;
 using Unity.Collections;
 using UnityEngine.UI;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System;
 
 public class GenerateTilemapWorld : MonoBehaviour {
     [Header("Surface Blocks")]
-    public Tile grass;
-    public Tile dirt;
-    [Header("Underground Blocks")]
-    public Tile stone;
+    public Tile[] TileList;
     [Header("World Settings")]
     public int chunkWidth;
     [Space(10)]
@@ -30,7 +28,8 @@ public class GenerateTilemapWorld : MonoBehaviour {
     public followCursor cursor;
     int lastX;
     [Space(20)]
-    public GameObject ItemBox;
+    public GameObject PlaceSilhouette;
+    public int HotbarIndex = 0;
     Tilemap tilemap;
     Tile selectedTile;
     private Vector3Int mousePos() {
@@ -39,59 +38,41 @@ public class GenerateTilemapWorld : MonoBehaviour {
     }
     void Start() {
         tilemap=this.gameObject.GetComponent<Tilemap>();
-        Tile[] tiles = { dirt, grass, stone };
-        selectedTile=tiles[0];
-        ItemBox.GetComponent<Image>().sprite=tiles[0].sprite;
+        selectedTile=TileList[0];
+        PlaceSilhouette.GetComponent<SpriteRenderer>().sprite=TileList[0].sprite;
     }
     void Update() {
+
         if(Input.GetKeyDown(KeyCode.M)) {
             ThreadWorldGeneration(new Job());
         }
         if(Input.GetMouseButton(0)) {
             tilemap.SetTile(mousePos(), null);
-        }else if(Input.GetMouseButton(1) && cursor.Placable) {
+        }
+        else if(Input.GetMouseButton(1)&&cursor.Placable) {
             tilemap.SetTile(mousePos(), selectedTile);
         }
         if(Input.GetKeyDown(KeyCode.E)) {
             changeItem(true);
-        }else if(Input.GetKeyDown(KeyCode.Q)) {
+        }
+        else if(Input.GetKeyDown(KeyCode.Q)) {
             changeItem(false);
         }
-
     }
-    void changeItem(bool r)/*Right = True - Left = False*/ {
-        Tile[] tiles = { dirt, grass, stone };
+    void changeItem(bool r)/*Incr = True - Decr = False*/ {
         if(r) {
-            if(selectedTile==tiles[2]) {
-                selectedTile=tiles[0];
-                ItemBox.GetComponent<Image>().sprite=tiles[0].sprite;
+            HotbarIndex++;
+            if(HotbarIndex>TileList.Length-1) {
+                HotbarIndex=0;
             }
-            else if(selectedTile==tiles[0]) {
-                selectedTile=tiles[1];
-                ItemBox.GetComponent<Image>().sprite=tiles[1].sprite;
+            else if(HotbarIndex<0) {
+                HotbarIndex=TileList.Length-1;
             }
-            else if(selectedTile==tiles[1]) {
-                selectedTile=tiles[2];
-                ItemBox.GetComponent<Image>().sprite=tiles[2].sprite;
-            }
-        }
-        else {
-            if(selectedTile==tiles[2]) {
-                selectedTile=tiles[1];
-                ItemBox.GetComponent<Image>().sprite=tiles[1].sprite;
-            }
-            else if(selectedTile==tiles[0]) {
-                selectedTile=tiles[2];
-                ItemBox.GetComponent<Image>().sprite=tiles[2].sprite;
-            }
-            else if(selectedTile==tiles[1]) {
-                selectedTile=tiles[0];
-                ItemBox.GetComponent<Image>().sprite=tiles[0].sprite;
-            }
+            selectedTile=TileList[HotbarIndex];
+            PlaceSilhouette.GetComponent<SpriteRenderer>().sprite=TileList[HotbarIndex].sprite;
         }
     }
     void ThreadWorldGeneration(Job job) {
-        TileBase[] tiles = { dirt, grass, stone };
         job.lastX=lastX;
         lastX=lastX+16;
         job.additionalHeight=this.additionalHeight;
@@ -108,7 +89,7 @@ public class GenerateTilemapWorld : MonoBehaviour {
         job.Lacunarity=this.Lacunarity;
         job.additionalLacunarity=this.additionalLacunarity;
         job.smoothness=this.smoothness;
-        job.blockList=tiles;
+        job.tiles=TileList;
         job.Execute();
     }
 }

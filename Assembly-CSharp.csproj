@@ -66,12 +66,14 @@
     <Compile Include="Assets\Prefabs\Character\CharacterController2D.cs" />
     <Compile Include="Assets\Scripts\BackgroundParallax.cs" />
     <Compile Include="Assets\Scripts\Data\CZLF2.cs" />
+    <Compile Include="Assets\Scripts\Data\DataToWorld.cs" />
     <Compile Include="Assets\Scripts\GenerateChunks.cs" />
     <Compile Include="Assets\Scripts\GeneratePlainChunk.cs" />
     <Compile Include="Assets\Scripts\GeneratePlainChunkL.cs" />
     <Compile Include="Assets\Scripts\GenerateTilemapWorld.cs" />
     <Compile Include="Assets\Scripts\Job.cs" />
     <Compile Include="Assets\Scripts\Noise.cs" />
+    <Compile Include="Assets\Scripts\Player\Inventory.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerUtils.cs" />
     <Compile Include="Assets\Scripts\WorldGen.cs" />
     <Compile Include="Assets\Scripts\destroyTouching.cs" />
