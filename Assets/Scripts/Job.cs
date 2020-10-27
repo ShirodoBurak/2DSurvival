@@ -36,12 +36,11 @@ public class Job : IJob {
         #region Block placement
         pb:
             int h = Mathf.FloorToInt((noiseMap[0, clx+j]+noiseMap2[0, clx+j]/smoothness)*100)+additionalHeight;
-            int randomDirtHeight = 6;
             int X = j+clx;
             if(i==h) {
                 writeToData(X-CX*chunkWidth, i-CY*chunkWidth, "grass", CY, CX);
             }
-            else if(i<h&&i>h-randomDirtHeight) {
+            else if(i<h&&i>h-8) {
                 writeToData(X-CX*chunkWidth, i-CY*chunkWidth, "dirt", CY, CX);
             }
             else {
