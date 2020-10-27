@@ -32,11 +32,15 @@ public class GenerateTilemapWorld : MonoBehaviour {
     public int HotbarIndex = 0;
     Tilemap tilemap;
     Tile selectedTile;
+    float[,] noiseMap;
+    float[,] noiseMap2;
     private Vector3Int mousePos() {
         Vector3 mousepos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
         return new Vector3Int(Mathf.FloorToInt(mousepos.x), Mathf.FloorToInt(mousepos.y), 0);
     }
     void Start() {
+        noiseMap=Noise.GenerateNoiseMap(1, mapSizeY, Seed, Scale, Octaves, Persistence, Lacunarity, new Vector2(X, Y));
+        noiseMap2=Noise.GenerateNoiseMap(1, mapSizeY+100000, Seed, Scale, Octaves, Persistence, Lacunarity+additionalLacunarity, new Vector2(X, Y));
         tilemap=this.gameObject.GetComponent<Tilemap>();
         selectedTile=TileList[0];
         PlaceSilhouette.GetComponent<SpriteRenderer>().sprite=TileList[0].sprite;
@@ -77,10 +81,11 @@ public class GenerateTilemapWorld : MonoBehaviour {
         lastX=lastX+16;
         job.additionalHeight=this.additionalHeight;
         job.chunkWidth=this.chunkWidth;
-        job.tilemap=this.gameObject.GetComponent<Tilemap>();
         job.mapSizeX=this.mapSizeX;
         job.mapSizeY=this.mapSizeY;
         job.X=this.X;
+        job.noiseMap=noiseMap;
+        job.noiseMap2=noiseMap2;
         job.Y=this.Y;
         job.Seed=this.Seed;
         job.Octaves=this.Octaves;
@@ -89,7 +94,6 @@ public class GenerateTilemapWorld : MonoBehaviour {
         job.Lacunarity=this.Lacunarity;
         job.additionalLacunarity=this.additionalLacunarity;
         job.smoothness=this.smoothness;
-        job.tiles=TileList;
         job.Execute();
     }
 }

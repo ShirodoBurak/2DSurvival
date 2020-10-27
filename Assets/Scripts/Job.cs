@@ -13,10 +13,8 @@ using UnityEngine.Tilemaps;
 public class Job : IJob {
     public int lastX;
     public int chunkWidth;
-    public TileBase[] tiles;
-    public Tilemap tilemap;
-    float[,] noiseMap;
-    float[,] noiseMap2;
+    public float[,] noiseMap;
+    public float[,] noiseMap2;
     public int mapSizeX;
     public int mapSizeY;
     public int X;
@@ -28,13 +26,10 @@ public class Job : IJob {
     byte[] bytes;
     string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments)+"/shirodo";
     string data = "";
-    public void noiseMaps() {
-        noiseMap=Noise.GenerateNoiseMap(1, mapSizeY, Seed, Scale, Octaves, Persistence, Lacunarity, new Vector2(X, Y));
-        noiseMap2=Noise.GenerateNoiseMap(1, mapSizeY, Seed, Scale, Octaves, Persistence, Lacunarity+additionalLacunarity, new Vector2(X, Y));
-    }
     public void Execute() {
-        noiseMaps();
         int clx = lastX;
+        int CY = 0;
+        int CX = lastX/chunkWidth;
         lastX=lastX+16;
         for(int j = 0; j<chunkWidth; j++) {
             int i = 0;
@@ -44,18 +39,15 @@ public class Job : IJob {
             int randomDirtHeight = 6;
             int X = j+clx;
             if(i==h) {
-                tilemap.SetTile(new Vector3Int(X, i, 0), tiles[1]);
-                writeToData(X, i, tiles[1].name);
+                writeToData(X-CX*chunkWidth, i-CY*chunkWidth, "grass", CY, CX);
             }
             else if(i<h&&i>h-randomDirtHeight) {
-
-                tilemap.SetTile(new Vector3Int(X, i, 0), tiles[0]);
-                writeToData(X, i, tiles[0].name);
+                writeToData(X-CX*chunkWidth, i-CY*chunkWidth, "dirt", CY, CX);
             }
             else {
-                tilemap.SetTile(new Vector3Int(X, i, 0), tiles[2]);
-                writeToData(X, i, tiles[2].name);
+                writeToData(X-CX*chunkWidth, i-CY*chunkWidth, "stone", CY, CX);
             }
+            if(i==chunkWidth*CY){CY++;} // If height equals chunkHeight times chunkWidth, Increase chunkHeight.
             if(i<h) { i++; goto pb; }
         #endregion
         }
@@ -64,8 +56,8 @@ public class Job : IJob {
         wrtData.Start();
     }
     #region Data management
-    void writeToData(int X, int Y, string T) {
-        data+="X"+X+"Y"+Y+"T"+T+'\n';
+    void writeToData(int X, int Y, string T, int CY /*Chunk height (Multiplied by chunkWidth)*/,int CX) {
+        data+=X+"/"+Y+"/"+T+"/"+CY+"/"+CX+'\n';
     }
     void createFiles() {
         int index = lastX/16;
@@ -80,10 +72,11 @@ public class Job : IJob {
         int index = lastX/16;
         createFiles();
         File.WriteAllBytes(path+"/chunk-"+index+".dat", CLZF2.Compress(bytes));
-        File.WriteAllText(path+"/chunk-"+index+".txt", readData(lastX/16));
+        File.WriteAllText(path+"/chunk-"+index+".txt", data);
     }
-    string readData(int position) {
-        return Encoding.ASCII.GetString(CLZF2.Decompress(File.ReadAllBytes(path+"/shirodo/chunk-"+position+".dat")));
+    public string[] readData(int position) {
+        string d = Encoding.ASCII.GetString(CLZF2.Decompress(File.ReadAllBytes(path+"/shirodo/chunk-"+position+".dat")));
+        return d.Split('\n'); ;
     }
     #endregion
 }
